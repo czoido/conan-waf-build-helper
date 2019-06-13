@@ -13,9 +13,6 @@ class PythonRequires(ConanFile):
 def get_conanfile():
     class BaseConanFile(ConanFile):
 
-        def build_requirements(self):
-            self.build_requires("waf_installer/2.0.17@czoido/testing")
-
         def package_info(self):
             self.cpp_info.libs = [self.name]
 
