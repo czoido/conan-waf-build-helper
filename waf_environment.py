@@ -3,7 +3,7 @@ import shutil
 from conans import ConanFile, tools
 from conans.client.tools.oss import args_to_string
 from conans.util.files import normalize, save
-from conans.client.build.compiler_flags import libcxx_flag
+from conans.client.build.compiler_flags import libcxx_flag, libcxx_define, format_defines
 from conans.client.build.cppstd_flags import cppstd_flag
 from conans.errors import ConanException
 
@@ -46,9 +46,22 @@ class WafBuildEnvironment(object):
             version.append('0')
         return "('{}', '{}', '{}')".format(version[0], version[1], version[2])
 
+    def _libcxx_flags(self, compiler, libcxx):
+        lib_flags = []
+        if libcxx:
+            stdlib_define = libcxx_define(compiler=compiler, libcxx=libcxx)
+            lib_flags.extend(format_defines([stdlib_define]))
+            cxxf = libcxx_flag(compiler=compiler, libcxx=libcxx)
+            if cxxf:
+                lib_flags.append(cxxf)
+
+        return lib_flags
+
     def _toolchain_content(self):
         sections = []
         sections.append("def configure(conf):")
+        sections.append("    if not conf.env.CXXFLAGS:")
+        sections.append("       conf.env.CXXFLAGS = []")
         if "Visual Studio" in self._compiler:
             # first we set the options for the compiler, then load
             sections.append("    conf.env.MSVC_VERSION = '{}'".format(
@@ -62,26 +75,21 @@ class WafBuildEnvironment(object):
 
             sections.append(
                 "    conf.env.CXXFLAGS.append('/{}')".format(self._compiler_runtime))
-            sections.append("    conf.load('msvc')")
         else:
-            if "gcc" in self._compiler:
-                sections.append("    conf.load('gcc')")
-            elif "clang" in self._compiler:
-                sections.append("    conf.load('clangxx')")
-            else:
-                sections.append("    conf.load('compiler_cxx')")
-
             sections.append("    conf.env.CC_VERSION = {}".format(
                 self._gcc_ver_conan2waf(self._compiler_version)))
 
-            cxxf = libcxx_flag(compiler=self._compiler,
-                               libcxx=self._compiler_libcxx)
-            sections.append("    conf.env.CXXFLAGS.append('{}')".format(cxxf))
+            cxxf = self._libcxx_flags(compiler=self._compiler,
+                                      libcxx=self._compiler_libcxx)
+            for flag in cxxf:
+                sections.append(
+                    "    conf.env.CXXFLAGS.append('{}')".format(flag))
 
-            cppstdf = cppstd_flag(
-                self._compiler, self._compiler_version, self._compiler_cppstd)
-            sections.append(
-                "    conf.env.CXXFLAGS.append('{}')".format(cppstdf))
+            if self._compiler_cppstd:
+                cppstdf = cppstd_flag(
+                    self._compiler, self._compiler_version, self._compiler_cppstd)
+                sections.append(
+                    "    conf.env.CXXFLAGS.append('{}')".format(cppstdf))
 
         return "\n".join(sections)
 
