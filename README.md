@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/czoido/conan-waf-build-helper.svg?branch=master)](https://travis-ci.com/czoido/conan-waf-build-helper)
+
 ## How to Use
 
 1. Install conan: https://docs.conan.io/en/latest/installation.html
