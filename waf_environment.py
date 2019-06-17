@@ -103,13 +103,16 @@ class WafBuildEnvironment(object):
         save(os.path.join(output_path, filename),
              content, only_if_modified=True)
 
-    # add all kinds of arguments that can be passed to waf via command line
-    def configure(self):
+    def configure(self, args=None):
         self._save_toolchain_file()
-        self._run("waf configure")
+        args = args or []
+        command = "waf configure " + " ".join(arg for arg in args)
+        self._run(command)
 
-    def build(self):
-        self._run("waf build")
+    def build(self, args=None):
+        args = args or []
+        command = "waf build " + " ".join(arg for arg in args)
+        self._run(command)
 
     def _run(self, command):
         self._conanfile.run(command)
