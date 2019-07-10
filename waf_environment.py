@@ -62,6 +62,8 @@ class WafBuildEnvironment(object):
         sections.append("def configure(conf):")
         sections.append("    if not conf.env.CXXFLAGS:")
         sections.append("       conf.env.CXXFLAGS = []")
+        sections.append("    if not conf.env.LINKFLAGS:")
+        sections.append("       conf.env.LINKFLAGS = []")
         if "Visual Studio" in self._compiler:
             # first we set the options for the compiler, then load
             sections.append("    conf.env.MSVC_VERSION = '{}'".format(
@@ -71,10 +73,14 @@ class WafBuildEnvironment(object):
                     self._arch_conan2waf[self._arch_build]))
             except KeyError:
                 raise ConanException(
-                    "Architecture  '%s' not supported" % self._arch_build)
+                    "Architecture  '%s' not supported" % self._arch_build)            
 
             sections.append(
                 "    conf.env.CXXFLAGS.append('/{}')".format(self._compiler_runtime))
+
+            if self._build_type == "Debug":
+                sections.append("    conf.env.CXXFLAGS += ['/Zi', '/FS']")
+                sections.append("    conf.env.LINKFLAGS += ['/DEBUG']")
         else:
             sections.append("    conf.env.CC_VERSION = {}".format(
                 self._gcc_ver_conan2waf(self._compiler_version)))
