@@ -82,7 +82,7 @@ class WafBuildEnvironment(object):
                 sections.append("    conf.env.CXXFLAGS += ['/Zi', '/FS']")
                 sections.append("    conf.env.LINKFLAGS += ['/DEBUG']")
             else:
-                sections.append("    conf.env.CXXFLAGS += ['-O2']")
+                sections.append("    conf.env.CXXFLAGS += ['/O2']")
         else:
             sections.append("    conf.env.CC_VERSION = {}".format(
                 self._gcc_ver_conan2waf(self._compiler_version)))
