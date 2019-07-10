@@ -81,7 +81,7 @@ class WafBuildEnvironment(object):
             if self._build_type == "Debug":
                 sections.append("    conf.env.CXXFLAGS += ['/Zi', '/FS']")
                 sections.append("    conf.env.LINKFLAGS += ['/DEBUG']")
-            else:
+            elif self._build_type == "Release":
                 sections.append("    conf.env.CXXFLAGS += ['/O2']")
         else:
             sections.append("    conf.env.CC_VERSION = {}".format(
@@ -98,6 +98,11 @@ class WafBuildEnvironment(object):
                     self._compiler, self._compiler_version, self._compiler_cppstd)
                 sections.append(
                     "    conf.env.CXXFLAGS.append('{}')".format(cppstdf))
+
+            if self._build_type == "Debug":
+                sections.append("    conf.env.CXXFLAGS += ['-g']")
+            elif self._build_type == "Release":
+                sections.append("    conf.env.CXXFLAGS += ['-O3']")
 
         return "\n".join(sections)
 
