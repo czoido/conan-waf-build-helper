@@ -12,8 +12,6 @@ class PythonRequires(ConanFile):
 
 def get_conanfile():
     class BaseConanFile(ConanFile):
-
-        def package_info(self):
-            self.cpp_info.libs = [self.name]
+        pass
 
     return BaseConanFile
