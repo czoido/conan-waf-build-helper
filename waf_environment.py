@@ -11,28 +11,13 @@ from conans.errors import ConanException
 class WafBuildEnvironment(object):
     def __init__(self, conanfile):
         self._conanfile = conanfile
-        self._settings = conanfile.settings
-        self._os_build = self._ss("os_build")
         self._arch_build = self._ss("arch_build")
         self._os = self._ss("os")
-        self._os_subsystem = self._ss("os.subsystem")
-        self._arch = self._ss("arch")
         self._compiler = self._ss("compiler")
         self._compiler_version = self._ss("compiler.version")
-        self._compiler_threads = self._ss("compiler.threads")
         self._compiler_libcxx = self._ss("compiler.libcxx")
         self._compiler_cppstd = self._ss("compiler.cppstd")
         self._build_type = self._ss("build_type")
-        # shared
-        self._shared = self._so("shared")
-        # fpic
-        if self._os and "Windows" not in self._os:
-            self._fpic = self._so("fPIC")
-        # gcc
-        self._compiler_threads = self._ss("compiler.threads")
-        self._compiler_exception = self._ss("compiler.exception")
-        # vs
-        self._compiler_toolset = self._ss("compiler.toolset")
         self._compiler_runtime = self._ss("compiler.runtime")
         self._arch_conan2waf = {'x86': 'x86', 'x86_64': 'x64'}
 
