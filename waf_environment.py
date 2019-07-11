@@ -9,7 +9,6 @@ from conans.errors import ConanException
 
 
 class WafBuildEnvironment(object):
-
     def __init__(self, conanfile):
         self._conanfile = conanfile
         self._settings = conanfile.settings
@@ -35,10 +34,7 @@ class WafBuildEnvironment(object):
         # vs
         self._compiler_toolset = self._ss("compiler.toolset")
         self._compiler_runtime = self._ss("compiler.runtime")
-        self._arch_conan2waf = {
-            'x86': 'x86',
-            'x86_64': 'x64'
-        }
+        self._arch_conan2waf = {'x86': 'x86', 'x86_64': 'x64'}
 
     def _gcc_ver_conan2waf(self, conan_version):
         version = [v for v in conan_version.split('.', 3)]
@@ -73,10 +69,10 @@ class WafBuildEnvironment(object):
                     self._arch_conan2waf[self._arch_build]))
             except KeyError:
                 raise ConanException(
-                    "Architecture  '%s' not supported" % self._arch_build)            
+                    "Architecture  '%s' not supported" % self._arch_build)
 
-            sections.append(
-                "    conf.env.CXXFLAGS.append('/{}')".format(self._compiler_runtime))
+            sections.append("    conf.env.CXXFLAGS.append('/{}')".format(
+                self._compiler_runtime))
 
             if self._build_type == "Debug":
                 sections.append("    conf.env.CXXFLAGS.extend(['/Zi', '/FS'])")
@@ -87,15 +83,15 @@ class WafBuildEnvironment(object):
             sections.append("    conf.env.CC_VERSION = {}".format(
                 self._gcc_ver_conan2waf(self._compiler_version)))
 
-            cxxf = self._libcxx_flags(compiler=self._compiler,
-                                      libcxx=self._compiler_libcxx)
+            cxxf = self._libcxx_flags(
+                compiler=self._compiler, libcxx=self._compiler_libcxx)
             for flag in cxxf:
                 sections.append(
                     "    conf.env.CXXFLAGS.append('{}')".format(flag))
 
             if self._compiler_cppstd:
-                cppstdf = cppstd_flag(
-                    self._compiler, self._compiler_version, self._compiler_cppstd)
+                cppstdf = cppstd_flag(self._compiler, self._compiler_version,
+                                      self._compiler_cppstd)
                 sections.append(
                     "    conf.env.CXXFLAGS.append('{}')".format(cppstdf))
 
@@ -111,10 +107,12 @@ class WafBuildEnvironment(object):
         content = self._toolchain_content()
         output_path = self._conanfile.build_folder
         content = normalize(content)
-        self._conanfile.output.info(
-            "Waf Toolchain File created: %s" % (filename))
-        save(os.path.join(output_path, filename),
-             content, only_if_modified=True)
+        self._conanfile.output.info("Waf Toolchain File created: %s" %
+                                    (filename))
+        save(
+            os.path.join(output_path, filename),
+            content,
+            only_if_modified=True)
 
     def configure(self, args=None):
         self._save_toolchain_file()
